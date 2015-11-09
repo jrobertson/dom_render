@@ -10,7 +10,7 @@ class DomRender
   attr_reader :to_a
 
   def initialize(s)
-    @to_a = render Rexle.new(s).root
+    @to_a = render Rexle.new(s.gsub(/\n/,'')).root
   end
 
   def render(x)
