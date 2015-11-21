@@ -14,7 +14,14 @@ class DomRender
   end
 
   def render(x)
-    method(x.name.to_sym).call(x)
+    
+    r = method(x.name.to_sym).call(x)
+    
+    if r.last.empty? then
+      r[0..-2]
+    else
+      r
+    end
   end
 
   def render_all(x)
