@@ -15,7 +15,11 @@ class DomRender
 
   def render(x)
     
-    r = method(x.name.to_sym).call(x)
+    style = fetch_style(x.attributes) if x.attributes.has_key? :style
+    args = [x]
+    args.concat([x.attributes, style])
+    
+    r = method(x.name.to_sym).call(*args)
     
     if r.last.empty? then
       r[0..-2]
@@ -39,4 +43,16 @@ class DomRender
     end
 
   end
+  
+  private
+  
+  def fetch_style(attributes={})
+    
+    attributes[:style].split(';').inject({}) do |r, x| 
+      k, v = x.split(':',2)
+      r.merge(k.to_sym => v)
+    end
+
+  end
+  
 end
