@@ -9,8 +9,15 @@ class DomRender
 
   attr_reader :to_a
 
-  def initialize(s)
-    @to_a = render Rexle.new(s.gsub(/\n/,'')).root
+  def initialize(x)
+    
+    doc = if x.kind_of? Rexle then
+      x
+    else
+      Rexle.new x.gsub(/\n/,'')
+    end
+    
+    @to_a = render doc.root
   end
 
   def render(x)
