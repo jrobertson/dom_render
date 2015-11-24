@@ -22,7 +22,7 @@ class DomRender
 
   def render(x)
     
-    style = fetch_style(x.attributes) if x.attributes.has_key? :style
+    style = x.attributes.has_key?(:style) ? fetch_style(x.attributes) : {}
     args = [x]
     args.concat([x.attributes, style])
     
