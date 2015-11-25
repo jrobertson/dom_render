@@ -62,4 +62,22 @@ class DomRender
 
   end
   
+  # expands a CSS shorthand for a margin or padding property
+  # e.g. "1em 1.5em" #=> ['1em','1.5em','1em','1.5em']
+  #
+  def expand_shorthand(s)
+
+    a = s.scan(/\d+(?:\.\d+)?\s*(?:em|px)?/)
+
+    case a.length
+    when 1 then [a[0]] * 4
+    when 2 then [a[0],a[-1],a[0],a[-1]]
+    when 4 then a
+    else
+      (a + [0,0,0,0]).take 4
+    end
+    
+  end
+  
+  
 end
