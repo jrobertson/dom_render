@@ -4,12 +4,51 @@
 
 require 'rexle'
 
+module InspectArray
+      
+  def scan(a, i=0)
+    
+    if a.first.is_a? Symbol
+      
+        puts a.inspect    
+        
+    else
+      
+      puts ('  ' * i) + '['
+
+      a.each.with_index do |row, j|
+
+        if row.is_a? String or row.is_a? Symbol then
+          print ('  ' * (i+1)) + row.inspect
+          print ',' unless a.length - 1 == j
+          puts
+        elsif row.first.is_a? Symbol or row.first.is_a? String
+          puts ('  ' * (i+1)) + '['
+          puts ('  ' * (i+2)) + row.inspect[1..-2]
+          print ('  ' * (i+1)) + ']'
+          print ',' unless a.length - 1 == j
+          puts
+        else
+          scan(row,i+1)
+          print ',' unless a.length - 1 == j
+          puts
+        end
+      end
+
+      print indent = ('  ' * i) + ']'
+    end
+  end
+  
+end
 
 class DomRender
-
+  include InspectArray
+  
   attr_reader :to_a
 
   def initialize(x)
+    
+    raise "DomRender#initialize: supplied parameter cannot be nil" unless x
     
     doc = if x.kind_of? Rexle then
       x
@@ -17,7 +56,7 @@ class DomRender
       Rexle.new x.gsub(/\n/,'')
     end
     
-    @to_a = render doc.root
+    @a = render doc.root
   end
 
   def render(x)
@@ -28,8 +67,10 @@ class DomRender
     
     r = method(x.name.to_sym).call(*args)
     
-    if r.last.empty? then
-      r[0..-2]
+    return unless r and r.length > 0
+
+    if r.last.nil? or r.last.empty? then
+      r[0..-2].flatten(1)
     else
       r
     end
@@ -39,14 +80,31 @@ class DomRender
 
     len = x.children.length - 1
 
-    x.children.map.with_index do |obj,i|
+    r = x.children.map.with_index do |obj,i|
 
       if obj.is_a? String then
-        i == 0 ? obj.lstrip.sub(/\s+$/,' ') : obj.rstrip.sub(/^\s+/,' ')
+        if obj.strip.length > 0 then
+          i == 0 ? obj.lstrip.sub(/\s+$/,' ') : obj.sub(/^\s+/,' ')          
+        else
+          ''
+        end
       elsif obj.is_a? Rexle::Element
         render obj
       end
 
+    end
+
+    r.compact
+
+  end
+  
+  def to_a(inspect: false, verbose: false)
+    
+    if inspect or verbose then
+      scan @a
+      puts
+    else
+      @a
     end
 
   end
@@ -54,8 +112,9 @@ class DomRender
   private
   
   def fetch_style(attributes={})
-    
-    attributes[:style].split(';').inject({}) do |r, x| 
+
+    attributes[:style].split(';').inject({}) do |r, x|
+
       k, v = x.split(':',2)
       r.merge(k.to_sym => v)
     end
@@ -78,6 +137,5 @@ class DomRender
     end
     
   end
-  
-  
+    
 end
