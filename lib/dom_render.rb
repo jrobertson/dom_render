@@ -69,11 +69,13 @@ class DomRender
     
     return unless r and r.length > 0
 
-    if r.last.nil? or r.last.empty? then
-      r[0..-2].flatten(1)
-    else
+    # jr051216 the following statement was commented out because it caused a 
+    #      bug when reading style attributes by exploding the coordinates array
+    #if r.last.nil? or r.last.empty? then
+    #  r[0..-2].flatten(1)
+    #else
       r
-    end
+    #end
   end
 
   def render_all(x)
