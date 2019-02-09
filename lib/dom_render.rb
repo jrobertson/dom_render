@@ -43,10 +43,13 @@ end
 
 class DomRender
   include InspectArray
+  using ColouredText
   
   attr_reader :to_a
 
-  def initialize(x)
+  def initialize(x, debug: false)
+                           
+    @debug = debug
     
     raise "DomRender#initialize: supplied parameter cannot be nil" unless x
     
@@ -60,6 +63,7 @@ class DomRender
   end
 
   def render(x)
+    puts 'inside render'
     
     style = x.attributes.has_key?(:style) ? fetch_style(x.attributes) : {}
     args = [x]
@@ -91,7 +95,10 @@ class DomRender
           ''
         end
       elsif obj.is_a? Rexle::Element
-        render obj
+        a = render obj
+        puts ('a: ' + a.inspect).debug if @debug
+        
+        a.length > 1 ? a : nil
       end
 
     end
@@ -127,7 +134,7 @@ class DomRender
   # e.g. "1em 1.5em" #=> ['1em','1.5em','1em','1.5em']
   #
   def expand_shorthand(s)
-
+    puts 'inside expand'
     a = s.scan(/\d+(?:\.\d+)?\s*(?:em|px)?/)
 
     case a.length
