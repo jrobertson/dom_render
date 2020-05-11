@@ -63,15 +63,18 @@ class DomRender
   end
 
   def render(x)
-    puts 'inside render'
+    
+    puts 'inside render'.info if @debug
     
     style = x.attributes.has_key?(:style) ? fetch_style(x.attributes) : {}
     args = [x]
     args.concat([x.attributes, style])
     
+    puts 'x.name: ' + x.name.to_sym.inspect if @debug
     r = method(x.name.to_sym).call(*args)
+    puts 'r: ' + r.inspect if @debug
     
-    return unless r and r.length > 0
+    return [] unless r and r.length > 0
 
     # jr051216 the following statement was commented out because it caused a 
     #      bug when reading style attributes by exploding the coordinates array
@@ -84,6 +87,7 @@ class DomRender
 
   def render_all(x)
 
+    puts 'x.children: ' + x.children.inspect if @debug
     len = x.children.length - 1
 
     r = x.children.map.with_index do |obj,i|
@@ -95,8 +99,10 @@ class DomRender
           ''
         end
       elsif obj.is_a? Rexle::Element
+        
+        puts 'obj: ' + obj.inspect
         a = render obj
-        puts ('a: ' + a.inspect).debug if @debug
+        puts ('_a: ' + a.inspect).debug if @debug
         
         a.length > 1 ? a : nil
       end
@@ -106,6 +112,14 @@ class DomRender
     r.compact
 
   end
+  
+  def script(e, attributes, style)
+    []
+  end     
+  
+  def style(e, attributes, style)
+    []
+  end   
   
   def to_a(inspect: false, verbose: false)
     
