@@ -1,6 +1,6 @@
 Gem::Specification.new do |s|
   s.name = 'dom_render'
-  s.version = '0.4.0'
+  s.version = '0.4.1'
   s.summary = 'Designed to render HTML'
   s.authors = ['James Robertson']
   s.files = Dir['lib/dom_render.rb']

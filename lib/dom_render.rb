@@ -67,11 +67,9 @@ class DomRender
     puts 'inside render'.info if @debug
     
     style = x.attributes.has_key?(:style) ? fetch_style(x.attributes) : {}
-    args = [x]
-    args.concat([x.attributes, style])
-    
+    puts 'style: ' + style.inspect if @debug
     puts 'x.name: ' + x.name.to_sym.inspect if @debug
-    r = method(x.name.to_sym).call(*args)
+    r = method(x.name.to_sym).call(x, x.attributes.merge(style))
     puts 'r: ' + r.inspect if @debug
     
     return [] unless r and r.length > 0
@@ -113,22 +111,22 @@ class DomRender
 
   end
   
-  def script(e, attributes, style)
+  def script(e, attributes)
     []
   end     
   
-  def style(e, attributes, style)
+  def style(e, attributes)
     []
   end   
   
   def to_a(inspect: false, verbose: false)
     
-    if inspect or verbose then
-      scan @a
-      puts
-    else
+    #if inspect or verbose then
+    #  scan @a
+    #  puts
+    #else
       @a
-    end
+    #end
 
   end
   
